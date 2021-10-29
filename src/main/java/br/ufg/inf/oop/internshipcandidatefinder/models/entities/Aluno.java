@@ -1,11 +1,11 @@
-package br.ufg.inf.oop.internshipcandidatefinder.models;
+package br.ufg.inf.oop.internshipcandidatefinder.models.entities;
 
 import java.util.Date;
 
 public class Aluno implements Enderecavel {
     private static int numberOfCreatedObjects = 0;
 
-    private int id = 0;
+    private int id;
     private String codigoDeMatricula;
     private String nome;
     private Date dataDeNascimento;

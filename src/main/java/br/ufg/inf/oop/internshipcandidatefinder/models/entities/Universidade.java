@@ -1,11 +1,11 @@
-package br.ufg.inf.oop.internshipcandidatefinder.models;
+package br.ufg.inf.oop.internshipcandidatefinder.models.entities;
 
 import java.util.List;
 
 public class Universidade implements Enderecavel {
     private static int numberOfCreatedObjects = 0;
 
-    private int id = 0;
+    private int id;
     private String nome;
     private String sigla;
     private String cnpj;
@@ -21,6 +21,10 @@ public class Universidade implements Enderecavel {
         this.cnpj = cnpj;
         this.telefone = telefone;
         this.endereco = endereco;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getNome() {

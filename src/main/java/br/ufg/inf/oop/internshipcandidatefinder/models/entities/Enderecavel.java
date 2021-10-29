@@ -1,4 +1,4 @@
-package br.ufg.inf.oop.internshipcandidatefinder.models;
+package br.ufg.inf.oop.internshipcandidatefinder.models.entities;
 
 public interface Enderecavel {
     public Endereco getEndereco();

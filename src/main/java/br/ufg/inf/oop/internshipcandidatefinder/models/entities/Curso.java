@@ -1,11 +1,11 @@
-package br.ufg.inf.oop.internshipcandidatefinder.models;
+package br.ufg.inf.oop.internshipcandidatefinder.models.entities;
 
 import java.util.List;
 
 public class Curso implements Enderecavel {
     private static int numberOfCreatedObjects = 0;
 
-    private int id = 0;
+    private int id;
     private String nome;
     private String sigla;
     private int numeroVagasAnuais;

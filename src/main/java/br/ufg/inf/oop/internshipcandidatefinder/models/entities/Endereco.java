@@ -1,9 +1,9 @@
-package br.ufg.inf.oop.internshipcandidatefinder.models;
+package br.ufg.inf.oop.internshipcandidatefinder.models.entities;
 
 public class Endereco {
     private static int numberOfCreatedObjects = 0;
 
-    private int id = 0;
+    private int id;
     private String cep;
     private String logradouro;
     private String bairro;
@@ -21,6 +21,10 @@ public class Endereco {
         this.bairro = bairro;
         this.municipio = municipio;
         this.unidadeFedrativa = unidadeFedrativa;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getCep() {
