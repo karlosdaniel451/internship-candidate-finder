@@ -1,8 +1,10 @@
 package br.ufg.inf.oop.internshipcandidatefinder.models.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Universidade implements Enderecavel {
+
     private static int numberOfCreatedObjects = 0;
 
     private int id;
@@ -11,7 +13,7 @@ public class Universidade implements Enderecavel {
     private String cnpj;
     private String telefone;
     private Endereco endereco;
-    private List<Curso> cursos;
+    private List<Curso> cursos = new ArrayList<>();
 
     public Universidade(String nome, String sigla, String cnpj, String telefone, Endereco endereco) {
         Universidade.numberOfCreatedObjects++;
@@ -75,8 +77,8 @@ public class Universidade implements Enderecavel {
 
     public void addCurso(Curso curso) {
         if (cursos.contains(curso)) {
-            throw new IllegalArgumentException("Tentativa de adicionar um curso ja existente na" +
-                    "lista de cursos.");
+            throw new IllegalArgumentException("Tentativa de adicionar um curso ja existente na"
+                    + "lista de cursos.");
         }
 
         cursos.add(curso);
@@ -84,13 +86,7 @@ public class Universidade implements Enderecavel {
 
     @Override
     public String toString() {
-        return "Universidade{" +
-                "nome='" + nome + '\'' +
-                ", sigla='" + sigla + '\'' +
-                ", cnpj='" + cnpj + '\'' +
-                ", telefone='" + telefone + '\'' +
-                ", endereco=" + endereco +
-                ", cursos=" + cursos +
-                '}';
+        return String.format("%s - %s.\nCNPJ: %s.\nTelefone: %s.\nEndereço: %s\nNúmero de cursos: %d",
+                nome, sigla, cnpj, telefone, endereco, cursos.size());
     }
 }

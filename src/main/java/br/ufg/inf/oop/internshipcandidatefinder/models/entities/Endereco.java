@@ -1,6 +1,7 @@
 package br.ufg.inf.oop.internshipcandidatefinder.models.entities;
 
 public class Endereco {
+
     private static int numberOfCreatedObjects = 0;
 
     private int id;
@@ -11,7 +12,7 @@ public class Endereco {
     private UnidadeFederativa unidadeFedrativa;
 
     public Endereco(String cep, String logradouro, String bairro, String municipio,
-                    UnidadeFederativa unidadeFedrativa) {
+            UnidadeFederativa unidadeFedrativa) {
 
         Endereco.numberOfCreatedObjects = 0;
 
@@ -69,8 +70,12 @@ public class Endereco {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         Endereco endereco = (Endereco) o;
 
@@ -84,12 +89,6 @@ public class Endereco {
 
     @Override
     public String toString() {
-        return "Endereco{" +
-                "cep='" + cep + '\'' +
-                ", logradouro='" + logradouro + '\'' +
-                ", bairro='" + bairro + '\'' +
-                ", municipio='" + municipio + '\'' +
-                ", unidadeFedrativa=" + unidadeFedrativa +
-                '}';
+        return String.format("%s. %s. %s. %s. %s.", logradouro, bairro, municipio, unidadeFedrativa.toString(), cep);
     }
 }

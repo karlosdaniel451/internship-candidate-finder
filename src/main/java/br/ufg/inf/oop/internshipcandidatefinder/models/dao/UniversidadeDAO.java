@@ -143,5 +143,31 @@ public class UniversidadeDAO implements DAO<Universidade> {
     public String getNomeDaTabela() {
         return "Universidade";
     }
+    
+    public List<Universidade> buscarPorNome(String nome) {
+        List<Universidade> universidades = new ArrayList<>();
+        String SQL = String.format("SELECT * FROM \"%s\" WHERE nome ILIKE '%%%s%%'", getNomeDaTabela(), nome);
+
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(SQL);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                String nomeUniversidade = resultSet.getString("nome");
+                String sigla = resultSet.getString("sigla");
+                String cnpj = resultSet.getString("cnpj");
+                String telefone = resultSet.getString("telefone");
+                Endereco endereco = enderecoDAO.buscar(resultSet.getInt("endereco_id"));
+
+                universidades.add(new Universidade(nomeUniversidade, sigla, cnpj, telefone, endereco));
+            }
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        }
+
+        return universidades;
+        
+        
+    }
 
 }
