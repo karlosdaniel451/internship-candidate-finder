@@ -1,5 +1,6 @@
 package br.ufg.inf.oop.internshipcandidatefinder.models.dao;
 
+import br.ufg.inf.oop.internshipcandidatefinder.exceptions.NotFoundException;
 import br.ufg.inf.oop.internshipcandidatefinder.models.entities.Endereco;
 import br.ufg.inf.oop.internshipcandidatefinder.models.entities.Universidade;
 
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UniversidadeDAO implements DAO<Universidade> {
+
     private Connection connection;
     private EnderecoDAO enderecoDAO;
 
@@ -20,31 +22,27 @@ public class UniversidadeDAO implements DAO<Universidade> {
     }
 
     @Override
-    public void inserir(Universidade universidade) {
-        String SQL = String.format("INSERT INTO %s (id, nome, sigla, cnpj, telefone, " +
-                "endereco_id) values (?, ?, ?, ?, ?, ?)", getNomeDaTabela());
+    public void inserir(Universidade universidade) throws SQLException {
+        String SQL = String.format("INSERT INTO \"%s\" (id, nome, sigla, cnpj, telefone, "
+                + "endereco_id) values (?, ?, ?, ?, ?, ?)", getNomeDaTabela());
 
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL);
-            preparedStatement.setInt(1, universidade.getId());
-            preparedStatement.setString(2, universidade.getNome());
-            preparedStatement.setString(3, universidade.getSigla());
-            preparedStatement.setString(4, universidade.getCnpj());
-            preparedStatement.setString(5, universidade.getTelefone());
-            preparedStatement.setInt(6, universidade.getEndereco().getId());
+        PreparedStatement preparedStatement = connection.prepareStatement(SQL);
+        preparedStatement.setInt(1, universidade.getId());
+        preparedStatement.setString(2, universidade.getNome());
+        preparedStatement.setString(3, universidade.getSigla());
+        preparedStatement.setString(4, universidade.getCnpj());
+        preparedStatement.setString(5, universidade.getTelefone());
+        preparedStatement.setInt(6, universidade.getEndereco().getId());
 
-            preparedStatement.executeUpdate();
+        preparedStatement.executeUpdate();
 
-            preparedStatement.close();
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-        }
+        preparedStatement.close();
     }
 
     @Override
     public void atualizar(Universidade universidade) {
-        String SQL = String.format("UPDATE %s SET nome = ?, sigla = ?, cnpj = ?, telefone = ?," +
-                "endereco_id = ?", getNomeDaTabela());
+        String SQL = String.format("UPDATE %s SET nome = ?, sigla = ?, cnpj = ?, telefone = ?,"
+                + "endereco_id = ?", getNomeDaTabela());
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(SQL);
@@ -62,35 +60,32 @@ public class UniversidadeDAO implements DAO<Universidade> {
     }
 
     @Override
-    public Universidade buscar(int id) {
+    public Universidade buscar(int id) throws SQLException, NotFoundException {
         Universidade universidade = null;
 
         String SQL = String.format("SELECT * FROM \"%s\" WHERE id = ?", getNomeDaTabela());
 
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatement = connection.prepareStatement(SQL);
 
-        try {
-            preparedStatement = connection.prepareStatement(SQL);
+        preparedStatement.setInt(1, id);
 
-            preparedStatement.setInt(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
 
-            ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()) {
+            String nome = resultSet.getString("nome");
+            String sigla = resultSet.getString("sigla");
+            String cnpj = resultSet.getString("cnpj");
+            String telefone = resultSet.getString("telefone");
+            Endereco endereco = enderecoDAO.buscar(resultSet.getInt("endereco_id"));
 
-            if (resultSet.first()) {
-                String nome = resultSet.getString("nome");
-                String sigla = resultSet.getString("sigla");
-                String cnpj = resultSet.getString("cnpj");
-                String telefone = resultSet.getString("telefone");
-                Endereco endereco = enderecoDAO.buscar(resultSet.getInt("endereco_id"));
+            universidade = new Universidade(nome, sigla, cnpj, telefone, endereco);
+        }
 
-                universidade = new Universidade(nome, sigla, cnpj, telefone, endereco);
-            }
+        resultSet.close();
+        preparedStatement.close();
 
-            resultSet.close();
-            preparedStatement.close();
-
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
+        if (universidade == null) {
+            throw new NotFoundException("Não foi encontrada nenhuma Universidade com o id " + id + " .");
         }
 
         return universidade;
@@ -99,6 +94,9 @@ public class UniversidadeDAO implements DAO<Universidade> {
     @Override
     public List<Universidade> buscarTudo() {
         List<Universidade> universidades = new ArrayList<>();
+        Universidade universidade = new Universidade();
+        Endereco endereco = new Endereco();
+
         String SQL = String.format("SELECT * FROM \"%s\"", getNomeDaTabela());
 
         try {
@@ -110,9 +108,11 @@ public class UniversidadeDAO implements DAO<Universidade> {
                 String sigla = resultSet.getString("sigla");
                 String cnpj = resultSet.getString("cnpj");
                 String telefone = resultSet.getString("telefone");
-                Endereco endereco = enderecoDAO.buscar(resultSet.getInt("endereco_id"));
+                endereco = enderecoDAO.buscar(resultSet.getInt("endereco_id"));
 
-                universidades.add(new Universidade(nome, sigla, cnpj, telefone, endereco));
+                universidade = new Universidade(nome, sigla, cnpj, telefone, endereco);
+
+                universidades.add(universidade);
             }
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
@@ -143,7 +143,7 @@ public class UniversidadeDAO implements DAO<Universidade> {
     public String getNomeDaTabela() {
         return "Universidade";
     }
-    
+
     public List<Universidade> buscarPorNome(String nome) {
         List<Universidade> universidades = new ArrayList<>();
         String SQL = String.format("SELECT * FROM \"%s\" WHERE nome ILIKE '%%%s%%'", getNomeDaTabela(), nome);
@@ -166,8 +166,20 @@ public class UniversidadeDAO implements DAO<Universidade> {
         }
 
         return universidades;
-        
-        
+
     }
 
+    /*public int getNumberOfInsertedRecords() throws SQLException {
+        int numberOfInstertedRegisters = 0;
+        String SQL = String.format("SELECT MAX(id) FROM \"%s\"", getNomeDaTabela());
+
+        PreparedStatement preparedStatement = connection.prepareStatement(SQL);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        resultSet.next();
+        
+        numberOfInstertedRegisters = resultSet.getInt("max");
+
+        return numberOfInstertedRegisters;
+    }*/
 }

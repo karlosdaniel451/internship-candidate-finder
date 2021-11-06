@@ -1,8 +1,9 @@
 package br.ufg.inf.oop.internshipcandidatefinder;
 
-import br.ufg.inf.oop.internshipcandidatefinder.services.UniversidadeService;
-import br.ufg.inf.oop.internshipcandidatefinder.exceptions.NotFoundException;
-import br.ufg.inf.oop.internshipcandidatefinder.models.entities.Universidade;
+//import br.ufg.inf.oop.internshipcandidatefinder.services.UniversidadeService;
+//import br.ufg.inf.oop.internshipcandidatefinder.exceptions.NotFoundException;
+//import br.ufg.inf.oop.internshipcandidatefinder.models.entities.Universidade;
+import br.ufg.inf.oop.internshipcandidatefinder.services.AppService;
 import br.ufg.inf.oop.internshipcandidatefinder.views.MainView;
 
 import javax.swing.*;
@@ -13,24 +14,25 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class App {
+
+    private static AppService appService;
+    private static MainView mainView;
+
     public static void main(String[] args) {
+
         try {
-            //System.out.println("Hello, world!");
-            
-            /*List<Universidade> todasUniversidades = new ArrayList<>();
-            try {
-            UniversidadeService universidadeService = new UniversidadeService();
+            appService = new AppService();
+            appService.synchronizeAppWithDatabase();
 
-            todasUniversidades = universidadeService.buscarTodasUniversidades();
-
-            JOptionPane.showMessageDialog(null,todasUniversidades.get(0));
-            } catch (SQLException | NotFoundException e) {
-            JOptionPane.showMessageDialog(null, e.getMessage(), "ERRO!", JOptionPane.ERROR_MESSAGE);
-            }*/
             new MainView().setVisible(true);
-        } catch (SQLException ex) {
+
+        } catch (Exception ex) {
             Logger.getLogger(App.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null, "Mensagem de erro: " + ex.getMessage(), "ERRO", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null,
+                    "Não foi possível iniciar o programa pois houve um erro interno."
+                    + " Se desejar, contate o suporte explicitando "
+                    + "a mensagem de erro abaixo:\n\n " + ex.getMessage(),
+                    "ERRO INTERNO", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

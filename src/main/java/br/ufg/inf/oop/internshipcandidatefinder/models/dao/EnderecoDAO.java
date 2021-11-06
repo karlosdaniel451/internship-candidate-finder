@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class EnderecoDAO implements DAO<Endereco> {
+
     private Connection connection;
 
     public EnderecoDAO() throws SQLException {
@@ -18,7 +19,25 @@ public class EnderecoDAO implements DAO<Endereco> {
 
     @Override
     public void inserir(Endereco endereco) {
+        String SQL = String.format("INSERT INTO \"%s\" values (?, ?, ?, ?, ?, ?)", getNomeDaTabela());
 
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(SQL);
+
+            preparedStatement.setInt(1, endereco.getId());
+            preparedStatement.setString(2, endereco.getCep());
+            preparedStatement.setString(3, endereco.getLogradouro());
+            preparedStatement.setString(4, endereco.getBairro());
+            preparedStatement.setString(5, endereco.getMunicipio());
+            preparedStatement.setString(6, endereco.getUnidadeFedrativa().getSigla());
+
+            preparedStatement.executeUpdate();
+
+            preparedStatement.close();
+            
+        } catch (SQLException sqlException) {
+            sqlException.printStackTrace();
+        }
     }
 
     @Override

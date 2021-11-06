@@ -3,7 +3,8 @@ package br.ufg.inf.oop.internshipcandidatefinder.models.entities;
 import java.util.Date;
 
 public class Aluno implements Enderecavel {
-    private static int numberOfCreatedObjects = 0;
+
+    public static int numberOfCreatedObjects = 0;
 
     private int id;
     private String codigoDeMatricula;
@@ -14,8 +15,12 @@ public class Aluno implements Enderecavel {
     private Date dataDeMatricula;
     private Endereco endereco;
 
+    public Aluno() {
+
+    }
+
     public Aluno(String codigoDeMatricula, String nome, Date dataDeNascimento, String email,
-                 String telefone, Date dataDeMatricula, Endereco enderecoDeMatricula) {
+            String telefone, Date dataDeMatricula, Endereco enderecoDeMatricula) {
 
         Aluno.numberOfCreatedObjects++;
 
@@ -89,14 +94,14 @@ public class Aluno implements Enderecavel {
 
     @Override
     public String toString() {
-        return "Aluno{" +
-                "codigoDeMatricula='" + codigoDeMatricula + '\'' +
-                ", nome='" + nome + '\'' +
-                ", dataDeNascimento=" + dataDeNascimento +
-                ", email='" + email + '\'' +
-                ", telefone='" + telefone + '\'' +
-                ", dataDeMatricula=" + dataDeMatricula +
-                ", endereco=" + endereco +
-                '}';
+        return "Aluno{"
+                + "codigoDeMatricula='" + codigoDeMatricula + '\''
+                + ", nome='" + nome + '\''
+                + ", dataDeNascimento=" + dataDeNascimento
+                + ", email='" + email + '\''
+                + ", telefone='" + telefone + '\''
+                + ", dataDeMatricula=" + dataDeMatricula
+                + ", endereco=" + endereco
+                + '}';
     }
 }

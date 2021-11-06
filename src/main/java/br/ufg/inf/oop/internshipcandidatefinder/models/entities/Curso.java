@@ -3,7 +3,8 @@ package br.ufg.inf.oop.internshipcandidatefinder.models.entities;
 import java.util.List;
 
 public class Curso implements Enderecavel {
-    private static int numberOfCreatedObjects = 0;
+
+    public static int numberOfCreatedObjects = 0;
 
     private int id;
     private String nome;
@@ -14,8 +15,13 @@ public class Curso implements Enderecavel {
     private Endereco endereco;
     private List<Aluno> alunos;
 
+    public Curso() {
+
+    }
+
     public Curso(String nome, String sigla, int numeroVagasAnuais, short cargaHoraria,
-                 short duracaoEmSemestres, Endereco enderecoDaSede) {
+            short duracaoEmSemestres, Endereco enderecoDaSede) {
+
         Curso.numberOfCreatedObjects++;
 
         this.id = numberOfCreatedObjects;
@@ -83,8 +89,8 @@ public class Curso implements Enderecavel {
 
     public void addAluno(Aluno aluno) {
         if (alunos.contains(aluno)) {
-            throw new IllegalArgumentException("Tentativa de adicionar um aluno ja existente na" +
-                    "lista de alunos.");
+            throw new IllegalArgumentException("Tentativa de adicionar um aluno ja existente na"
+                    + "lista de alunos.");
         }
 
         alunos.add(aluno);
@@ -92,14 +98,14 @@ public class Curso implements Enderecavel {
 
     @Override
     public String toString() {
-        return "Curso{" +
-                "nome='" + nome + '\'' +
-                ", sigla='" + sigla + '\'' +
-                ", numeroVagasAnuais=" + numeroVagasAnuais +
-                ", cargaHoraria=" + cargaHoraria +
-                ", duracaoEmSemestres=" + duracaoEmSemestres +
-                ", enderecoDaSede=" + endereco +
-                ", alunos=" + alunos +
-                '}';
+        return "Curso{"
+                + "nome='" + nome + '\''
+                + ", sigla='" + sigla + '\''
+                + ", numeroVagasAnuais=" + numeroVagasAnuais
+                + ", cargaHoraria=" + cargaHoraria
+                + ", duracaoEmSemestres=" + duracaoEmSemestres
+                + ", enderecoDaSede=" + endereco
+                + ", alunos=" + alunos
+                + '}';
     }
 }

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Universidade implements Enderecavel {
 
-    private static int numberOfCreatedObjects = 0;
+    public static int numberOfCreatedObjects = 0;
 
     private int id;
     private String nome;
@@ -14,6 +14,10 @@ public class Universidade implements Enderecavel {
     private String telefone;
     private Endereco endereco;
     private List<Curso> cursos = new ArrayList<>();
+
+    public Universidade() {
+
+    }
 
     public Universidade(String nome, String sigla, String cnpj, String telefone, Endereco endereco) {
         Universidade.numberOfCreatedObjects++;

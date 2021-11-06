@@ -2,7 +2,7 @@ package br.ufg.inf.oop.internshipcandidatefinder.models.entities;
 
 public class Endereco {
 
-    private static int numberOfCreatedObjects = 0;
+    public static int numberOfCreatedObjects = 0;
 
     private int id;
     private String cep;
@@ -11,10 +11,14 @@ public class Endereco {
     private String municipio;
     private UnidadeFederativa unidadeFedrativa;
 
+    public Endereco() {
+
+    }
+
     public Endereco(String cep, String logradouro, String bairro, String municipio,
             UnidadeFederativa unidadeFedrativa) {
 
-        Endereco.numberOfCreatedObjects = 0;
+        Endereco.numberOfCreatedObjects++;
 
         this.id = numberOfCreatedObjects;
         this.cep = cep;
@@ -89,6 +93,6 @@ public class Endereco {
 
     @Override
     public String toString() {
-        return String.format("%s. %s. %s. %s. %s.", logradouro, bairro, municipio, unidadeFedrativa.toString(), cep);
+        return String.format("%s. %s. %s. %s. %s.", logradouro, bairro, municipio, unidadeFedrativa.getNome(), cep);
     }
 }

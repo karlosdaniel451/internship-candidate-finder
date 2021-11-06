@@ -4,10 +4,14 @@
  */
 package br.ufg.inf.oop.internshipcandidatefinder.views;
 
+import br.ufg.inf.oop.internshipcandidatefinder.exceptions.InvalidInputFromUserException;
 import br.ufg.inf.oop.internshipcandidatefinder.exceptions.NotFoundException;
+import br.ufg.inf.oop.internshipcandidatefinder.models.entities.Endereco;
+import br.ufg.inf.oop.internshipcandidatefinder.models.entities.UnidadeFederativa;
 import br.ufg.inf.oop.internshipcandidatefinder.models.entities.Universidade;
 import br.ufg.inf.oop.internshipcandidatefinder.services.UniversidadeService;
-import java.sql.SQLException;
+import java.awt.Component;
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,14 +22,16 @@ import javax.swing.JOptionPane;
  * @author karlos
  */
 public class MainView extends javax.swing.JFrame {
-    
+
     private UniversidadeService universidadeService;
 
     /**
      * Creates new form MainView
+     *
+     * @throws java.lang.Exception
      */
-    public MainView() throws SQLException {
-        this.universidadeService = new UniversidadeService();
+    public MainView() throws Exception {
+        this.universidadeService = UniversidadeService.getInstance();
         initComponents();
     }
 
@@ -40,10 +46,10 @@ public class MainView extends javax.swing.JFrame {
 
         menuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
-        openMenuItem = new javax.swing.JMenuItem();
-        saveMenuItem = new javax.swing.JMenuItem();
-        saveAsMenuItem = new javax.swing.JMenuItem();
-        exitMenuItem = new javax.swing.JMenuItem();
+        inserirUniversidadeMenuItem = new javax.swing.JMenuItem();
+        buscarUniversidadeMenuItem = new javax.swing.JMenuItem();
+        atualizarUniversidadeMenuItem = new javax.swing.JMenuItem();
+        removerUniversidadeMenuItem = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
         cutMenuItem = new javax.swing.JMenuItem();
         copyMenuItem = new javax.swing.JMenuItem();
@@ -60,31 +66,37 @@ public class MainView extends javax.swing.JFrame {
         fileMenu.setMnemonic('f');
         fileMenu.setText("Universidade");
 
-        openMenuItem.setMnemonic('o');
-        openMenuItem.setText("Inserir");
-        fileMenu.add(openMenuItem);
-
-        saveMenuItem.setMnemonic('s');
-        saveMenuItem.setText("Buscar");
-        saveMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        inserirUniversidadeMenuItem.setFont(new java.awt.Font("Ubuntu", 0, 16)); // NOI18N
+        inserirUniversidadeMenuItem.setMnemonic('o');
+        inserirUniversidadeMenuItem.setText("Inserir");
+        inserirUniversidadeMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveMenuItemActionPerformed(evt);
+                inserirUniversidadeMenuItemActionPerformed(evt);
             }
         });
-        fileMenu.add(saveMenuItem);
+        fileMenu.add(inserirUniversidadeMenuItem);
 
-        saveAsMenuItem.setMnemonic('a');
-        saveAsMenuItem.setText("Atualizar");
-        fileMenu.add(saveAsMenuItem);
-
-        exitMenuItem.setMnemonic('x');
-        exitMenuItem.setText("Remover");
-        exitMenuItem.addActionListener(new java.awt.event.ActionListener() {
+        buscarUniversidadeMenuItem.setMnemonic('s');
+        buscarUniversidadeMenuItem.setText("Buscar");
+        buscarUniversidadeMenuItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                exitMenuItemActionPerformed(evt);
+                buscarUniversidadeMenuItemActionPerformed(evt);
             }
         });
-        fileMenu.add(exitMenuItem);
+        fileMenu.add(buscarUniversidadeMenuItem);
+
+        atualizarUniversidadeMenuItem.setMnemonic('a');
+        atualizarUniversidadeMenuItem.setText("Atualizar");
+        fileMenu.add(atualizarUniversidadeMenuItem);
+
+        removerUniversidadeMenuItem.setMnemonic('x');
+        removerUniversidadeMenuItem.setText("Remover");
+        removerUniversidadeMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removerUniversidadeMenuItemActionPerformed(evt);
+            }
+        });
+        fileMenu.add(removerUniversidadeMenuItem);
 
         menuBar.add(fileMenu);
 
@@ -144,43 +156,168 @@ public class MainView extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void exitMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitMenuItemActionPerformed
+    private void removerUniversidadeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removerUniversidadeMenuItemActionPerformed
         System.exit(0);
-    }//GEN-LAST:event_exitMenuItemActionPerformed
+    }//GEN-LAST:event_removerUniversidadeMenuItemActionPerformed
 
-    private void saveMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveMenuItemActionPerformed
+    private void buscarUniversidadeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarUniversidadeMenuItemActionPerformed
         // TODO add your handling code here:
 
-        String nome = JOptionPane.showInputDialog(this, "Digite o nome da universidade ou parte dele.",
-                "Buscar universidade", JOptionPane.QUESTION_MESSAGE);
-        
-        List<Universidade> universidadesBuscadas;
+        Universidade universidadeBuscada = null;
+
+        universidadeBuscada = mostrarOpcaoDeSelecaoDeUniversidade(this);
+
+        if (universidadeBuscada == null) {
+            JOptionPane.showMessageDialog(this, "Não foi encontrada nenhuma Universidade com a sigla");
+            return;
+        }
+
+        JOptionPane.showMessageDialog(this, universidadeBuscada, "Dados de " + universidadeBuscada.getNome(),
+                JOptionPane.PLAIN_MESSAGE);
+
+    }//GEN-LAST:event_buscarUniversidadeMenuItemActionPerformed
+
+    private void inserirUniversidadeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inserirUniversidadeMenuItemActionPerformed
+        // TODO add your handling code here:
+        //new UniversidadeInsercaoView(this, rootPaneCheckingEnabled).setVisible(true);
+        //new UniversidadeInsercaoView().setVisible(true);
+
+        Universidade universidade;
+        Endereco endereco;
+
+        String nomeUniversidade = JOptionPane.showInputDialog(this, "Digite o nome da Universidade.",
+                "Inserção de Universidade",
+                JOptionPane.QUESTION_MESSAGE);
+        String siglaUniversidade = JOptionPane.showInputDialog(this, "Digite a sigla da Universidade.",
+                "Inserção de Universidade",
+                JOptionPane.QUESTION_MESSAGE);
+        String cnpjUniversidade = JOptionPane.showInputDialog(this, "Digite o CNPJ da Universidade.",
+                "Inserção de Universidade",
+                JOptionPane.QUESTION_MESSAGE);
+        String telefoneUniversidade = JOptionPane.showInputDialog(this, "Digite o telefone da Universidade.",
+                "Inserção de Universidade",
+                JOptionPane.QUESTION_MESSAGE);
+
         try {
-            universidadesBuscadas = universidadeService.buscarUniversidadePorNome(nome);
-            
+            endereco = mostrarOpcaoDeSelecaoDeEndereco(this, "Inserção de Universidade");
+            universidade = new Universidade(nomeUniversidade, siglaUniversidade, cnpjUniversidade, telefoneUniversidade,
+                    endereco);
+
+            universidadeService.inserirUniversidade(universidade, endereco);
+            JOptionPane.showMessageDialog(this, "Universidade inserida:\n\n" + universidade,
+                    "Universidade inserida com sucesso", JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (InvalidInputFromUserException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "ENTRADA INVÁLIDA", JOptionPane.ERROR_MESSAGE);
+
+        } catch (Exception exception) {
+            reportInternalError(this, exception);
+        }
+
+    }//GEN-LAST:event_inserirUniversidadeMenuItemActionPerformed
+
+    public static Universidade mostrarOpcaoDeSelecaoDeUniversidade(Component parentComponent) {
+        String nome = JOptionPane.showInputDialog(parentComponent, "Digite o nome da universidade ou parte dele.",
+                "Buscar universidade", JOptionPane.QUESTION_MESSAGE);
+
+        List<Universidade> universidadesBuscadas;
+        Universidade universidadeSelecionada = null;
+
+        try {
+            universidadesBuscadas = UniversidadeService.getInstance().buscarUniversidadePorNome(nome);
+
             StringBuilder stringResultadoDaBusca = new StringBuilder();
             for (Universidade universidade : universidadesBuscadas) {
-                stringResultadoDaBusca.append(universidade.getNome()).append(" - ").append(universidade.getSigla());
+                stringResultadoDaBusca.append(universidade.getNome()).append(" (").append(universidade.getSigla()).append(")\n");
             }
             //JOptionPane.showMessageDialog(this, stringResultadoDaBusca, "Resultado da busca", JOptionPane.PLAIN_MESSAGE);
-            String siglaDaUniversidadeASerSelecionada = JOptionPane.showInputDialog(this, stringResultadoDaBusca,
-                    "Digite a sigla da Universidade desejada", JOptionPane.QUESTION_MESSAGE);
-            
-            Universidade universidadeASerSelecionada = null;
-            
+            String siglaDaUniversidadeASerSelecionada = JOptionPane.showInputDialog(parentComponent,
+                    stringResultadoDaBusca, "Digite a sigla da Universidade desejada",
+                    JOptionPane.QUESTION_MESSAGE);
+
             for (Universidade universidade : universidadesBuscadas) {
                 if (universidade.getSigla().equalsIgnoreCase(siglaDaUniversidadeASerSelecionada)) {
-                    universidadeASerSelecionada = universidade;
+                    universidadeSelecionada = universidade;
                 }
             }
-            
-            JOptionPane.showMessageDialog(this, universidadeASerSelecionada, "Dados de " + universidadeASerSelecionada.getNome(), JOptionPane.PLAIN_MESSAGE);
-            
-        } catch (NotFoundException ex) {
-            Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(this, "Não foi encontrada nenhuma Universidade. ()", "Resultado da busca", JOptionPane.ERROR_MESSAGE);
+
+            while (universidadeSelecionada == null) {
+                JOptionPane.showMessageDialog(parentComponent, "Não foi encontrada nenhuma"
+                        + "Universidade com a sigla " + siglaDaUniversidadeASerSelecionada);
+                siglaDaUniversidadeASerSelecionada = JOptionPane.showInputDialog(parentComponent,
+                        stringResultadoDaBusca, "Digite a sigla da Universidade desejada",
+                        JOptionPane.QUESTION_MESSAGE);
+
+                for (Universidade universidade : universidadesBuscadas) {
+                    if (universidade.getSigla().equalsIgnoreCase(siglaDaUniversidadeASerSelecionada)) {
+                        universidadeSelecionada = universidade;
+                    }
+                }
+
+            }
+
+            //JOptionPane.showMessageDialog(this, universidadeASerSelecionada, "Dados de " + universidadeASerSelecionada.getNome(), JOptionPane.PLAIN_MESSAGE);
+        } catch (NullPointerException nullPointerException) {
+            // Nao faz nada, ja que o usuario apenas clicou em fechar o caixa de dialogo.
+        } catch (Exception exception) {
+            reportInternalError(parentComponent, exception);
         }
-    }//GEN-LAST:event_saveMenuItemActionPerformed
+
+        return universidadeSelecionada;
+    }
+
+    public static Endereco mostrarOpcaoDeSelecaoDeEndereco(Component parentComponent, String title)
+            throws InvalidInputFromUserException {
+        Endereco endereco;
+
+        String logradouro = JOptionPane.showInputDialog(parentComponent, "Digite o logradouro do endereço.",
+                title,
+                JOptionPane.QUESTION_MESSAGE);
+        String bairro = JOptionPane.showInputDialog(parentComponent, "Digite o bairro do endereço.",
+                title, JOptionPane.QUESTION_MESSAGE);
+        String municipio = JOptionPane.showInputDialog(parentComponent, "Digite município do endereço.",
+                title,
+                JOptionPane.QUESTION_MESSAGE);
+        String siglaUnidadeFederativa = JOptionPane.showInputDialog(parentComponent, "Digite a sigla da Unidade"
+                + " Federativa do endereço.\nUnidades Federativas:\n\n" + UnidadeFederativa.valuesToString(),
+                title, JOptionPane.QUESTION_MESSAGE);
+        String cep = JOptionPane.showInputDialog(parentComponent, "Digite o CEP do endereço.",
+                title,
+                JOptionPane.QUESTION_MESSAGE);
+
+        try {
+            endereco = new Endereco(cep, logradouro, bairro, municipio, UnidadeFederativa.fromSigla(siglaUnidadeFederativa));
+        } catch (IllegalArgumentException illegalArgumentException) {
+            throw new InvalidInputFromUserException("Sigla da Unidade Federaiva inválida.");
+        }
+
+        return endereco;
+    }
+
+    /**
+     * Registra no logger um erro interno e mostra uma mensagem de erro interno
+     * ao usuario em caixa de dialogo JOptionPane.
+     *
+     * @param parentComponent
+     * @param exception
+     */
+    public static void reportInternalError(Component parentComponent, Exception exception) {
+        Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, exception);
+        reportInternalErrorToUser(parentComponent, exception);
+    }
+
+    /**
+     * Mostra uma mensagem de erro ao usuario em uma caixa de dialogo
+     * JOptionPane.
+     *
+     * @param parentComponent
+     * @param exception
+     */
+    private static void reportInternalErrorToUser(Component parentComponent, Exception exception) {
+        JOptionPane.showMessageDialog(parentComponent, "Houve um erro interno. Se desejar, envie uma "
+                + "mensagem ao suporte informando a seguinte mensagen:\n\n" + exception.getMessage(),
+                "ERRO INTERNO", JOptionPane.ERROR_MESSAGE);
+    }
 
     /**
      * @param args the command line arguments
@@ -214,8 +351,12 @@ public class MainView extends javax.swing.JFrame {
             public void run() {
                 try {
                     new MainView().setVisible(true);
-                } catch (SQLException ex) {
+                } catch (Exception ex) {
                     Logger.getLogger(MainView.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(null,
+                            "Houve um erro interno. Se desejar, envie uma mensagem para o suporte explicitando "
+                            + "a mensagem de erro abaixo:\n\n " + ex.getMessage(),
+                            "ERRO INTERNO", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -223,21 +364,21 @@ public class MainView extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JMenuItem atualizarUniversidadeMenuItem;
+    private javax.swing.JMenuItem buscarUniversidadeMenuItem;
     private javax.swing.JMenuItem contentsMenuItem;
     private javax.swing.JMenuItem copyMenuItem;
     private javax.swing.JMenuItem cutMenuItem;
     private javax.swing.JMenuItem deleteMenuItem;
     private javax.swing.JMenu editMenu;
-    private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenu helpMenu;
+    private javax.swing.JMenuItem inserirUniversidadeMenuItem;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuBar menuBar;
-    private javax.swing.JMenuItem openMenuItem;
     private javax.swing.JMenuItem pasteMenuItem;
-    private javax.swing.JMenuItem saveAsMenuItem;
-    private javax.swing.JMenuItem saveMenuItem;
+    private javax.swing.JMenuItem removerUniversidadeMenuItem;
     // End of variables declaration//GEN-END:variables
 
 }
