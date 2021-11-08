@@ -7,6 +7,7 @@ import br.ufg.inf.oop.internshipcandidatefinder.models.dao.UniversidadeDAO;
 import br.ufg.inf.oop.internshipcandidatefinder.models.entities.Endereco;
 import br.ufg.inf.oop.internshipcandidatefinder.models.entities.UnidadeFederativa;
 import br.ufg.inf.oop.internshipcandidatefinder.models.entities.Universidade;
+import br.ufg.inf.oop.internshipcandidatefinder.views.MainView;
 import java.security.InvalidParameterException;
 
 import java.sql.SQLException;
@@ -51,8 +52,8 @@ public class UniversidadeService {
         Universidade.numberOfCreatedObjects++;
     }
 
-    public void validarInsercaoUniversidade(Universidade universidade) throws SQLException,
-            InvalidParameterException, InvalidInputFromUserException {
+    public void validarInsercaoUniversidade(Universidade universidade) throws InvalidParameterException,
+            InvalidInputFromUserException, IllegalArgumentException, Exception {
 
         if (universidadeENula(universidade)) {
             throw new InvalidParameterException("Tentativa de inserir uma Universidade nula.");
@@ -88,13 +89,27 @@ public class UniversidadeService {
 
         try {
             buscarUniversidadePorId(universidade.getId());
-            throw new InvalidInputFromUserException("Já existe essa Universidade");
+
         } catch (NotFoundException ex) {
             // Nao faz nada, ja que a `universidade` nao existe no banco de dados.
         }
+
+        if (contains(universidade.getId())) {
+            MainView.reportInternalError(null, new IllegalArgumentException("Já existe uma Universidade com o id "
+                    + universidade.getId()));
+        }
     }
 
-    public Universidade buscarUniversidadePorId(int id) throws SQLException, NotFoundException {
+    public boolean contains(int id) throws Exception {
+        try {
+            buscarUniversidadePorId(id);
+            return true;
+        } catch (NotFoundException ex) {
+            return false;
+        }
+    }
+
+    public Universidade buscarUniversidadePorId(int id) throws NotFoundException, Exception {
         Universidade universidade = universidadeDAO.buscar(id);
 
         return universidade;
@@ -116,16 +131,31 @@ public class UniversidadeService {
         return universidadesBuscadas;
     }
 
-    public List<Universidade> buscarTodasUniversidades() throws NotFoundException {
+    public List<Universidade> buscarTodasUniversidades() throws NotFoundException, Exception {
         List<Universidade> todasUniversidades;
 
         todasUniversidades = universidadeDAO.buscarTudo();
 
         if (todasUniversidades.isEmpty()) {
-            throw new NotFoundException("Não há nenhuma Universidade cadastrada");
+            throw new NotFoundException("Não há nenhuma Universidade cadastrada.");
         }
 
         return todasUniversidades;
+    }
+
+    public void removerUniversidadePorId(int id) throws IllegalArgumentException, Exception {
+        try {
+            Universidade universidadeASerRemovida = buscarUniversidadePorId(id);
+            Endereco enderecoASerRemovido = enderecoDAO.buscar(universidadeASerRemovida.getId());
+
+            universidadeDAO.remover(id);
+            enderecoDAO.remover(enderecoASerRemovido.getId());
+
+        } catch (Exception ex) {
+            //throw new IllegalArgumentException("Não existe nenhuma Universidade com o id " + id);
+            throw ex;
+        }
+
     }
 
     public boolean universidadeENula(Universidade universidade) {

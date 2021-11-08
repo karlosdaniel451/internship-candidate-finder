@@ -11,6 +11,7 @@ import br.ufg.inf.oop.internshipcandidatefinder.models.entities.UnidadeFederativ
 import br.ufg.inf.oop.internshipcandidatefinder.models.entities.Universidade;
 import br.ufg.inf.oop.internshipcandidatefinder.services.UniversidadeService;
 import java.awt.Component;
+import java.sql.SQLException;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.logging.Level;
@@ -157,18 +158,34 @@ public class MainView extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void removerUniversidadeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removerUniversidadeMenuItemActionPerformed
-        System.exit(0);
+        //System.exit(0);
+
+        Universidade universidadeASerRemovida = mostrarOpcaoDeSelecaoDeUniversidade(this);
+
+        if (universidadeASerRemovida == null) {
+            return;
+        }
+
+        try {
+            System.out.println("Id da Universidade a ser removida: " + universidadeASerRemovida.getId());
+            universidadeService.removerUniversidadePorId(universidadeASerRemovida.getId());
+            JOptionPane.showMessageDialog(this, "Universidade removida: " + universidadeASerRemovida.getNome(),
+                    "Operação realizada com sucesso.", JOptionPane.INFORMATION_MESSAGE);
+        } catch (InvalidInputFromUserException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "ENTRADA INVÁLIDA", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            reportInternalError(this, ex);
+        }
+
     }//GEN-LAST:event_removerUniversidadeMenuItemActionPerformed
 
     private void buscarUniversidadeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buscarUniversidadeMenuItemActionPerformed
         // TODO add your handling code here:
 
-        Universidade universidadeBuscada = null;
-
-        universidadeBuscada = mostrarOpcaoDeSelecaoDeUniversidade(this);
+        Universidade universidadeBuscada = mostrarOpcaoDeSelecaoDeUniversidade(this);
 
         if (universidadeBuscada == null) {
-            JOptionPane.showMessageDialog(this, "Não foi encontrada nenhuma Universidade com a sigla");
+            //JOptionPane.showMessageDialog(this, "Não foi encontrada nenhuma Universidade com a sigla");
             return;
         }
 
@@ -225,7 +242,7 @@ public class MainView extends javax.swing.JFrame {
 
         try {
             universidadesBuscadas = UniversidadeService.getInstance().buscarUniversidadePorNome(nome);
-
+            //System.out.println(universidadesBuscadas);
             StringBuilder stringResultadoDaBusca = new StringBuilder();
             for (Universidade universidade : universidadesBuscadas) {
                 stringResultadoDaBusca.append(universidade.getNome()).append(" (").append(universidade.getSigla()).append(")\n");
@@ -255,10 +272,13 @@ public class MainView extends javax.swing.JFrame {
                 }
 
             }
+            System.out.println("Id da Universidade selecionada: " + universidadeSelecionada.getId());
 
             //JOptionPane.showMessageDialog(this, universidadeASerSelecionada, "Dados de " + universidadeASerSelecionada.getNome(), JOptionPane.PLAIN_MESSAGE);
         } catch (NullPointerException nullPointerException) {
             // Nao faz nada, ja que o usuario apenas clicou em fechar o caixa de dialogo.
+        } catch (NotFoundException notFoundException) {
+            JOptionPane.showMessageDialog(parentComponent, "Não foi encontrada nenhuma Universidade.");
         } catch (Exception exception) {
             reportInternalError(parentComponent, exception);
         }
@@ -315,7 +335,7 @@ public class MainView extends javax.swing.JFrame {
      */
     private static void reportInternalErrorToUser(Component parentComponent, Exception exception) {
         JOptionPane.showMessageDialog(parentComponent, "Houve um erro interno. Se desejar, envie uma "
-                + "mensagem ao suporte informando a seguinte mensagen:\n\n" + exception.getMessage(),
+                + "mensagem ao suporte informando a seguinte mensagem:\n\n" + exception.getMessage(),
                 "ERRO INTERNO", JOptionPane.ERROR_MESSAGE);
     }
 

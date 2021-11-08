@@ -1,5 +1,6 @@
 package br.ufg.inf.oop.internshipcandidatefinder.models.dao;
 
+import br.ufg.inf.oop.internshipcandidatefinder.exceptions.NotFoundException;
 import br.ufg.inf.oop.internshipcandidatefinder.models.entities.Endereco;
 import br.ufg.inf.oop.internshipcandidatefinder.models.entities.UnidadeFederativa;
 
@@ -34,7 +35,7 @@ public class EnderecoDAO implements DAO<Endereco> {
             preparedStatement.executeUpdate();
 
             preparedStatement.close();
-            
+
         } catch (SQLException sqlException) {
             sqlException.printStackTrace();
         }
@@ -46,36 +47,40 @@ public class EnderecoDAO implements DAO<Endereco> {
     }
 
     @Override
-    public Endereco buscar(int id) {
+    public Endereco buscar(int id) throws SQLException, NotFoundException {
         Endereco endereco = null;
 
         String SQL = String.format("SELECT * FROM \"%s\" WHERE id = ?", getNomeDaTabela());
 
-        PreparedStatement preparedStatement = null;
+        PreparedStatement preparedStatement = connection.prepareStatement(SQL,
+                ResultSet.TYPE_SCROLL_INSENSITIVE,
+                ResultSet.CONCUR_UPDATABLE);
 
-        try {
-            preparedStatement = connection.prepareStatement(SQL,
-                    ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
+        preparedStatement.setInt(1, id);
 
-            preparedStatement.setInt(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
 
-            ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.first()) {
+            endereco = new Endereco();
+            
+            endereco.setId(resultSet.getInt("id"));
+            //String cep = resultSet.getString("cep");
+            endereco.setCep(resultSet.getString("cep"));
+            //String logradouro = resultSet.getString("logradouro");
+            endereco.setLogradouro(resultSet.getString("logradouro"));
+            //String bairro = resultSet.getString("bairro");
+            endereco.setBairro(resultSet.getString("bairro"));
+            //String municipio = resultSet.getString("municipio");
+            endereco.setMunicipio(resultSet.getString("municipio"));
+            //UnidadeFederativa uf = UnidadeFederativa.fromSigla(resultSet.getString("sigla_da_unidade_federativa"));
+            endereco.setUnidadeFedrativa(UnidadeFederativa.fromSigla(resultSet.getString("sigla_da_unidade_federativa")));
+        }
 
-            if (resultSet.first()) {
-                String cep = resultSet.getString("cep");
-                String logradouro = resultSet.getString("logradouro");
-                String bairro = resultSet.getString("bairro");
-                String municipio = resultSet.getString("municipio");
-                UnidadeFederativa uf = UnidadeFederativa.fromSigla(resultSet.getString("sigla_da_unidade_federativa"));
-                endereco = new Endereco(cep, logradouro, bairro, municipio, uf);
-            }
+        resultSet.close();
+        preparedStatement.close();
 
-            resultSet.close();
-            preparedStatement.close();
-
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
+        if (endereco == null) {
+            throw new NotFoundException("Não foi encontrada nenhum Endereço com o id " + id + " .");
         }
 
         return endereco;
@@ -87,8 +92,16 @@ public class EnderecoDAO implements DAO<Endereco> {
     }
 
     @Override
-    public void remover(int id) {
+    public void remover(int id) throws SQLException {
+        String SQL = String.format("DELETE FROM \"%s\" where id = ?", getNomeDaTabela());
 
+        PreparedStatement preparedStatement = connection.prepareStatement(SQL);
+
+        preparedStatement.setInt(1, id);
+
+        preparedStatement.execute();
+
+        preparedStatement.close();
     }
 
     @Override

@@ -13,11 +13,11 @@ public interface DAO<T> {
 
     void atualizar(T t);
 
-    T buscar(int id) throws SQLException, NotFoundException;
+    T buscar(int id) throws SQLException, NotFoundException, Exception;
 
-    List<T> buscarTudo();
+    List<T> buscarTudo() throws SQLException, Exception;
 
-    void remover(int id);
+    void remover(int id) throws SQLException;
 
     String getNomeDaTabela();
 

@@ -10,6 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UniversidadeDAO implements DAO<Universidade> {
 
@@ -60,7 +62,7 @@ public class UniversidadeDAO implements DAO<Universidade> {
     }
 
     @Override
-    public Universidade buscar(int id) throws SQLException, NotFoundException {
+    public Universidade buscar(int id) throws SQLException, NotFoundException, Exception {
         Universidade universidade = null;
 
         String SQL = String.format("SELECT * FROM \"%s\" WHERE id = ?", getNomeDaTabela());
@@ -72,13 +74,20 @@ public class UniversidadeDAO implements DAO<Universidade> {
         ResultSet resultSet = preparedStatement.executeQuery();
 
         if (resultSet.next()) {
-            String nome = resultSet.getString("nome");
-            String sigla = resultSet.getString("sigla");
-            String cnpj = resultSet.getString("cnpj");
-            String telefone = resultSet.getString("telefone");
-            Endereco endereco = enderecoDAO.buscar(resultSet.getInt("endereco_id"));
-
-            universidade = new Universidade(nome, sigla, cnpj, telefone, endereco);
+            universidade = new Universidade();
+            
+            universidade.setId(resultSet.getInt("id"));
+            //String nome = resultSet.getString("nome");
+            universidade.setNome(resultSet.getString("nome"));
+            //String sigla = resultSet.getString("sigla");
+            universidade.setSigla(resultSet.getString("sigla"));
+            //String cnpj = resultSet.getString("cnpj");
+            universidade.setCnpj(resultSet.getString("cnpj"));
+            //String telefone = resultSet.getString("telefone");
+            universidade.setTelefone(resultSet.getString("telefone"));
+            //Endereco endereco = enderecoDAO.buscar(resultSet.getInt("endereco_id"));
+            universidade.setEndereco(enderecoDAO.buscar(resultSet.getInt("endereco_id")));
+            
         }
 
         resultSet.close();
@@ -92,51 +101,48 @@ public class UniversidadeDAO implements DAO<Universidade> {
     }
 
     @Override
-    public List<Universidade> buscarTudo() {
+    public List<Universidade> buscarTudo() throws SQLException, Exception {
         List<Universidade> universidades = new ArrayList<>();
-        Universidade universidade = new Universidade();
-        Endereco endereco = new Endereco();
+        Universidade universidade;
 
         String SQL = String.format("SELECT * FROM \"%s\"", getNomeDaTabela());
 
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL);
-            ResultSet resultSet = preparedStatement.executeQuery();
+        PreparedStatement preparedStatement = connection.prepareStatement(SQL);
+        ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()) {
-                String nome = resultSet.getString("nome");
-                String sigla = resultSet.getString("sigla");
-                String cnpj = resultSet.getString("cnpj");
-                String telefone = resultSet.getString("telefone");
-                endereco = enderecoDAO.buscar(resultSet.getInt("endereco_id"));
+        while (resultSet.next()) {
+            universidade = new Universidade();
+            
+            universidade.setId(resultSet.getInt("id"));
+            //String nome = resultSet.getString("nome");
+            universidade.setNome(resultSet.getString("nome"));
+            //String sigla = resultSet.getString("sigla");
+            universidade.setSigla(resultSet.getString("sigla"));
+            //String cnpj = resultSet.getString("cnpj");
+            universidade.setCnpj(resultSet.getString("cnpj"));
+            //String telefone = resultSet.getString("telefone");
+            universidade.setTelefone(resultSet.getString("telefone"));
+            //endereco = enderecoDAO.buscar(resultSet.getInt("endereco_id"));
+            universidade.setEndereco(enderecoDAO.buscar(resultSet.getInt("endereco_id")));
 
-                universidade = new Universidade(nome, sigla, cnpj, telefone, endereco);
-
-                universidades.add(universidade);
-            }
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
+            universidades.add(universidade);
         }
 
         return universidades;
     }
 
     @Override
-    public void remover(int id) {
+    public void remover(int id) throws SQLException {
         String SQL = String.format("DELETE FROM \"%s\" where id = ?", getNomeDaTabela());
 
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL);
+        PreparedStatement preparedStatement = connection.prepareStatement(SQL);
 
-            preparedStatement.setInt(1, id);
+        preparedStatement.setInt(1, id);
 
-            preparedStatement.execute();
+        preparedStatement.execute();
 
-            preparedStatement.close();
+        preparedStatement.close();
 
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-        }
     }
 
     @Override
@@ -144,25 +150,30 @@ public class UniversidadeDAO implements DAO<Universidade> {
         return "Universidade";
     }
 
-    public List<Universidade> buscarPorNome(String nome) {
+    public List<Universidade> buscarPorNome(String nome) throws SQLException, Exception {
         List<Universidade> universidades = new ArrayList<>();
+        Universidade universidade;
+
         String SQL = String.format("SELECT * FROM \"%s\" WHERE nome ILIKE '%%%s%%'", getNomeDaTabela(), nome);
 
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL);
-            ResultSet resultSet = preparedStatement.executeQuery();
+        PreparedStatement preparedStatement = connection.prepareStatement(SQL);
+        ResultSet resultSet = preparedStatement.executeQuery();
 
-            while (resultSet.next()) {
-                String nomeUniversidade = resultSet.getString("nome");
-                String sigla = resultSet.getString("sigla");
-                String cnpj = resultSet.getString("cnpj");
-                String telefone = resultSet.getString("telefone");
-                Endereco endereco = enderecoDAO.buscar(resultSet.getInt("endereco_id"));
+        while (resultSet.next()) {
+            universidade = new Universidade();
+            universidade.setId(resultSet.getInt("id"));
+            //String nomeUniversidade = resultSet.getString("nome");
+            universidade.setNome(resultSet.getString("nome"));
+            //String sigla = resultSet.getString("sigla");
+            universidade.setSigla(resultSet.getString("sigla"));
+            //String cnpj = resultSet.getString("cnpj");
+            universidade.setCnpj(resultSet.getString("cnpj"));
+            //String telefone = resultSet.getString("telefone");
+            universidade.setTelefone(resultSet.getString("telefone"));
+            //Endereco endereco = enderecoDAO.buscar(resultSet.getInt("endereco_id"));
+            universidade.setEndereco(enderecoDAO.buscar(resultSet.getInt("endereco_id")));
 
-                universidades.add(new Universidade(nomeUniversidade, sigla, cnpj, telefone, endereco));
-            }
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
+            universidades.add(universidade);
         }
 
         return universidades;
