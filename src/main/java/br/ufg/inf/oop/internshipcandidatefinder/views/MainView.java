@@ -88,6 +88,11 @@ public class MainView extends javax.swing.JFrame {
 
         atualizarUniversidadeMenuItem.setMnemonic('a');
         atualizarUniversidadeMenuItem.setText("Atualizar");
+        atualizarUniversidadeMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                atualizarUniversidadeMenuItemActionPerformed(evt);
+            }
+        });
         fileMenu.add(atualizarUniversidadeMenuItem);
 
         removerUniversidadeMenuItem.setMnemonic('x');
@@ -232,6 +237,58 @@ public class MainView extends javax.swing.JFrame {
         }
 
     }//GEN-LAST:event_inserirUniversidadeMenuItemActionPerformed
+
+    private void atualizarUniversidadeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_atualizarUniversidadeMenuItemActionPerformed
+        // TODO add your handling code here:
+        Universidade universidadeASerAtualizada = mostrarOpcaoDeSelecaoDeUniversidade(this);
+
+        if (universidadeASerAtualizada == null) {
+            return;
+        }
+
+        try {
+            System.out.println("Id da Universidade a ser alterada: " + universidadeASerAtualizada.getId());
+
+            String possivelNovoNome = JOptionPane.showInputDialog(this, "Digite o novo nome da Universidade ou o mesmo.",
+                    universidadeASerAtualizada.getNome());
+            String possivelNovaSigla = JOptionPane.showInputDialog(this, "Digite a nova sigla da Universidade ou a mesma.",
+                    universidadeASerAtualizada.getSigla());
+            String possivelNovoCnpj = JOptionPane.showInputDialog(this, "Digite o novo CNPJ da Universidade ou o mesmo.",
+                    universidadeASerAtualizada.getCnpj());
+            String possivelNovoTelefone = JOptionPane.showInputDialog(this, "Digite o novo telefone da Universidade ou o mesmo.",
+                    universidadeASerAtualizada.getTelefone());
+            String possivelNovoCep = JOptionPane.showInputDialog(this, "Digite o novo CEP da Universidade ou o mesmo.",
+                    universidadeASerAtualizada.getEndereco().getCep());
+            String possivelNovoLogradouro = JOptionPane.showInputDialog(this, "Digite o novo logradouro da Universidade ou o mesmo.",
+                    universidadeASerAtualizada.getEndereco().getLogradouro());
+            String possivelNovoBairro = JOptionPane.showInputDialog(this, "Digite o novo bairro da Universidade ou o mesmo.",
+                    universidadeASerAtualizada.getEndereco().getBairro());
+            String possivelNovoMunicipio = JOptionPane.showInputDialog(this, "Digite o novo município da Universidade ou o mesmo.",
+                    universidadeASerAtualizada.getEndereco().getMunicipio());
+            UnidadeFederativa possivelNovaUnidadeFederativa = UnidadeFederativa.fromSigla(JOptionPane.showInputDialog(
+                    this, "Digite a sigla da nova UF da Universidade ou a mesma",
+                    universidadeASerAtualizada.getEndereco().getUnidadeFedrativa().getSigla()));
+
+            universidadeASerAtualizada.setNome(possivelNovoNome);
+            universidadeASerAtualizada.setSigla(possivelNovaSigla);
+            universidadeASerAtualizada.setCnpj(possivelNovoCnpj);
+            universidadeASerAtualizada.setTelefone(possivelNovoTelefone);
+            universidadeASerAtualizada.getEndereco().setCep(possivelNovoCep);
+            universidadeASerAtualizada.getEndereco().setLogradouro(possivelNovoLogradouro);
+            universidadeASerAtualizada.getEndereco().setBairro(possivelNovoBairro);
+            universidadeASerAtualizada.getEndereco().setMunicipio(possivelNovoMunicipio);
+            universidadeASerAtualizada.getEndereco().setUnidadeFedrativa(possivelNovaUnidadeFederativa);
+
+            universidadeService.atualizarUniversidade(universidadeASerAtualizada);
+
+            JOptionPane.showMessageDialog(this, "Dados atualizados da Universidade:\n\n" + universidadeASerAtualizada,
+                    "Operação realizada com sucesso", JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (Exception ex) {
+            reportInternalError(this, ex);
+        }
+
+    }//GEN-LAST:event_atualizarUniversidadeMenuItemActionPerformed
 
     public static Universidade mostrarOpcaoDeSelecaoDeUniversidade(Component parentComponent) {
         String nome = JOptionPane.showInputDialog(parentComponent, "Digite o nome da universidade ou parte dele.",

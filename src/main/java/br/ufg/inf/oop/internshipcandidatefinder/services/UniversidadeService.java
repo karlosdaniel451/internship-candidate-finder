@@ -48,8 +48,8 @@ public class UniversidadeService {
 
         universidadeDAO.inserir(universidade);
 
-        Endereco.numberOfCreatedObjects++;
-        Universidade.numberOfCreatedObjects++;
+        //Endereco.numberOfCreatedObjects++;
+        //Universidade.numberOfCreatedObjects++;
     }
 
     public void validarInsercaoUniversidade(Universidade universidade) throws InvalidParameterException,
@@ -141,6 +141,16 @@ public class UniversidadeService {
         }
 
         return todasUniversidades;
+    }
+
+    public void atualizarUniversidade(Universidade universidade) throws IllegalArgumentException, Exception {
+        if (!contains(universidade.getId())) {
+            throw new IllegalArgumentException("Não existe nenhuma Universidade com o id "
+                    + universidade.getId());
+        }
+
+        enderecoDAO.atualizar(universidade.getEndereco());
+        universidadeDAO.atualizar(universidade);
     }
 
     public void removerUniversidadePorId(int id) throws IllegalArgumentException, Exception {

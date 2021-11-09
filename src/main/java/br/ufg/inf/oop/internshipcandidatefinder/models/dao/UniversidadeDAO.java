@@ -42,23 +42,22 @@ public class UniversidadeDAO implements DAO<Universidade> {
     }
 
     @Override
-    public void atualizar(Universidade universidade) {
-        String SQL = String.format("UPDATE %s SET nome = ?, sigla = ?, cnpj = ?, telefone = ?,"
-                + "endereco_id = ?", getNomeDaTabela());
+    public void atualizar(Universidade universidade) throws SQLException {
+        String SQL = String.format("UPDATE \"%s\" SET nome = ?, sigla = ?, cnpj = ?, telefone = ? where id = ?",
+                getNomeDaTabela());
 
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL);
+        PreparedStatement preparedStatement = connection.prepareStatement(SQL);
 
-            preparedStatement.setString(1, universidade.getNome());
-            preparedStatement.setString(2, universidade.getSigla());
-            preparedStatement.setString(3, universidade.getCnpj());
-            preparedStatement.setString(4, universidade.getTelefone());
-            preparedStatement.setInt(5, universidade.getEndereco().getId());
+        preparedStatement.setString(1, universidade.getNome());
+        preparedStatement.setString(2, universidade.getSigla());
+        preparedStatement.setString(3, universidade.getCnpj());
+        preparedStatement.setString(4, universidade.getTelefone());
+        preparedStatement.setInt(5, universidade.getId());
 
-            preparedStatement.close();
-        } catch (SQLException sqlException) {
-            sqlException.printStackTrace();
-        }
+        preparedStatement.executeUpdate();
+
+        preparedStatement.close();
+
     }
 
     @Override
@@ -75,7 +74,7 @@ public class UniversidadeDAO implements DAO<Universidade> {
 
         if (resultSet.next()) {
             universidade = new Universidade();
-            
+
             universidade.setId(resultSet.getInt("id"));
             //String nome = resultSet.getString("nome");
             universidade.setNome(resultSet.getString("nome"));
@@ -87,7 +86,7 @@ public class UniversidadeDAO implements DAO<Universidade> {
             universidade.setTelefone(resultSet.getString("telefone"));
             //Endereco endereco = enderecoDAO.buscar(resultSet.getInt("endereco_id"));
             universidade.setEndereco(enderecoDAO.buscar(resultSet.getInt("endereco_id")));
-            
+
         }
 
         resultSet.close();
@@ -112,7 +111,7 @@ public class UniversidadeDAO implements DAO<Universidade> {
 
         while (resultSet.next()) {
             universidade = new Universidade();
-            
+
             universidade.setId(resultSet.getInt("id"));
             //String nome = resultSet.getString("nome");
             universidade.setNome(resultSet.getString("nome"));

@@ -21,6 +21,7 @@ public class Universidade implements Enderecavel {
 
     public Universidade(String nome, String sigla, String cnpj, String telefone, Endereco endereco) {
         Universidade.numberOfCreatedObjects++;
+
         this.id = numberOfCreatedObjects;
         this.nome = nome;
         this.sigla = sigla;
@@ -32,7 +33,7 @@ public class Universidade implements Enderecavel {
     public int getId() {
         return id;
     }
-    
+
     public void setId(int id) {
         this.id = id;
     }

@@ -9,6 +9,7 @@ public class Curso implements Enderecavel {
     private int id;
     private String nome;
     private String sigla;
+    private String area;
     private int numeroVagasAnuais;
     private short cargaHoraria;
     private short duracaoEmSemestres;
@@ -19,7 +20,7 @@ public class Curso implements Enderecavel {
 
     }
 
-    public Curso(String nome, String sigla, int numeroVagasAnuais, short cargaHoraria,
+    public Curso(String nome, String sigla, String area, int numeroVagasAnuais, short cargaHoraria,
             short duracaoEmSemestres, Endereco enderecoDaSede) {
 
         Curso.numberOfCreatedObjects++;
@@ -47,6 +48,14 @@ public class Curso implements Enderecavel {
 
     public void setSigla(String sigla) {
         this.sigla = sigla;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
     }
 
     public int getNumeroVagasAnuais() {
@@ -101,6 +110,7 @@ public class Curso implements Enderecavel {
         return "Curso{"
                 + "nome='" + nome + '\''
                 + ", sigla='" + sigla + '\''
+                + ", area='" + area
                 + ", numeroVagasAnuais=" + numeroVagasAnuais
                 + ", cargaHoraria=" + cargaHoraria
                 + ", duracaoEmSemestres=" + duracaoEmSemestres

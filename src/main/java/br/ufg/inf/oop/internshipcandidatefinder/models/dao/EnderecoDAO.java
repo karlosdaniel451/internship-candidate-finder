@@ -42,8 +42,22 @@ public class EnderecoDAO implements DAO<Endereco> {
     }
 
     @Override
-    public void atualizar(Endereco endereco) {
+    public void atualizar(Endereco endereco) throws SQLException {
+        String SQL = String.format("UPDATE \"%s\" SET cep = ?, logradouro = ?, bairro = ?, municipio = ?, "
+                + "sigla_da_unidade_federativa = ? where id = ?", getNomeDaTabela());
 
+        PreparedStatement preparedStatement = connection.prepareStatement(SQL);
+
+        preparedStatement.setString(1, endereco.getCep());
+        preparedStatement.setString(2, endereco.getLogradouro());
+        preparedStatement.setString(3, endereco.getBairro());
+        preparedStatement.setString(4, endereco.getMunicipio());
+        preparedStatement.setString(5, endereco.getUnidadeFedrativa().getSigla());
+        preparedStatement.setInt(6, endereco.getId());
+        
+        preparedStatement.executeUpdate();
+
+        preparedStatement.close();
     }
 
     @Override
@@ -62,7 +76,7 @@ public class EnderecoDAO implements DAO<Endereco> {
 
         if (resultSet.first()) {
             endereco = new Endereco();
-            
+
             endereco.setId(resultSet.getInt("id"));
             //String cep = resultSet.getString("cep");
             endereco.setCep(resultSet.getString("cep"));

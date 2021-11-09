@@ -11,7 +11,7 @@ public interface DAO<T> {
 
     void inserir(T t) throws SQLException;
 
-    void atualizar(T t);
+    void atualizar(T t) throws SQLException;
 
     T buscar(int id) throws SQLException, NotFoundException, Exception;
 
